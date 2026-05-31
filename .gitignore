@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.vite/
+.env.local
+.env.*.local
+*.log
+.chrome-*-profile*/
+.chrome-*-deploy-check*/
+.edge-*-deploy-check*/
+.public-share-url

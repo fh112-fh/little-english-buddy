@@ -1,0 +1,28 @@
+{
+  "name": "little-english-buddy",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "tsc && vite build --base=./",
+    "build:static": "npm run build && node scripts/create-spa-fallback.mjs",
+    "preview": "vite preview --host 127.0.0.1",
+    "serve:phone": "node scripts/serve-phone.mjs",
+    "share:public": "node scripts/share-public.mjs"
+  },
+  "dependencies": {
+    "lucide-react": "^0.468.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.15",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^4.3.4",
+    "cloudflared": "^0.7.1",
+    "typescript": "^5.8.3",
+    "vite": "^5.4.21",
+    "ws": "^8.21.0"
+  }
+}
