@@ -1,6 +1,6 @@
 <view class="app-shell">
   <view class="topbar">
-    <button class="mode-pill {{audienceMode === 'kid' ? 'active' : ''}}" data-mode="kid" bindtap="switchAudience">
+    <button class="mode-pill {{kidActive ? 'active' : ''}}" data-mode="kid" bindtap="switchAudience">
       <text class="mode-icon">☻</text>
       <text>孩子</text>
     </button>
@@ -8,49 +8,49 @@
       <text>✦</text>
       <text>Little English</text>
     </view>
-    <button class="mode-pill {{audienceMode === 'parent' ? 'active' : ''}}" data-mode="parent" bindtap="switchAudience">
+    <button class="mode-pill {{parentActive ? 'active' : ''}}" data-mode="parent" bindtap="switchAudience">
       <text class="mode-icon">♙</text>
       <text>家长</text>
     </button>
   </view>
 
-  <view wx:if="{{audienceMode === 'kid'}}" class="kid-view">
+  <view wx:if="{{kidActive}}" class="kid-view">
     <view class="star-row" aria-label="今日星星">
-      <text wx:for="{{starSlots}}" wx:key="index" class="star {{index < progress.stars && index < 5 ? 'filled' : ''}}">☆</text>
+      <text wx:for="{{starSlots}}" wx:key="index" class="star {{item.filled ? 'filled' : ''}}">☆</text>
       <text class="star-count">{{progress.stars}}</text>
     </view>
 
     <view class="mode-tabs">
-      <button wx:for="{{modes}}" wx:key="id" class="{{practiceMode === item.id ? 'active' : ''}}" data-mode="{{item.id}}" bindtap="switchPractice">
+      <button wx:for="{{modes}}" wx:key="id" class="{{item.active ? 'active' : ''}}" data-mode="{{item.id}}" bindtap="switchPractice">
         {{item.label}}
       </button>
     </view>
 
     <button class="word-stage {{activeCard.bg}}" bindtap="playWord">
-      <text class="category">{{categoryNames[activeCard.category]}}</text>
+      <text class="category">{{activeCategoryName}}</text>
       <text class="visual">{{activeCard.visual}}</text>
       <text class="word">{{activeCard.word}}</text>
-      <text class="hint">{{practiceMode === 'learn' ? activeCard.cn : activeCard.phrase}}</text>
+      <text class="hint">{{activeHint}}</text>
       <text class="tap-cue">🔊 tap</text>
     </button>
 
-    <view wx:if="{{practiceMode === 'learn'}}" class="action-grid single">
+    <view wx:if="{{isLearnMode}}" class="action-grid single">
       <button class="primary-action" bindtap="playWord">🔊 听一听</button>
     </view>
 
-    <view wx:if="{{practiceMode === 'listen'}}" class="choice-grid visual-grid">
+    <view wx:if="{{isListenMode}}" class="choice-grid visual-grid">
       <button wx:for="{{options}}" wx:key="id" class="choice-card {{item.bg}}" data-id="{{item.id}}" bindtap="chooseOption">
         <text>{{item.visual}}</text>
       </button>
     </view>
 
-    <view wx:if="{{practiceMode === 'match'}}" class="choice-grid word-grid">
+    <view wx:if="{{isMatchMode}}" class="choice-grid word-grid">
       <button wx:for="{{options}}" wx:key="id" class="word-choice" data-id="{{item.id}}" bindtap="chooseOption">{{item.word}}</button>
     </view>
 
-    <view wx:if="{{practiceMode === 'speak'}}" class="record-panel">
-      <button class="record-button {{recordingState === 'recording' ? 'recording' : ''}}" bindtap="toggleRecord">
-        {{recordingState === 'recording' ? '停止' : '开始跟读'}}
+    <view wx:if="{{isSpeakMode}}" class="record-panel">
+      <button class="record-button {{isRecording ? 'recording' : ''}}" bindtap="toggleRecord">
+        {{recordButtonText}}
       </button>
       <button wx:if="{{recordingPath}}" class="playback-button" bindtap="playRecording">▶ 听听自己</button>
       <text class="record-note">{{recordHint}}</text>
@@ -80,7 +80,7 @@
 
     <view class="metric-grid">
       <view class="metric"><text>{{progress.stars}}</text><text>星星</text></view>
-      <view class="metric"><text>{{progress.completedIds.length}}</text><text>词卡</text></view>
+      <view class="metric"><text>{{completedCount}}</text><text>词卡</text></view>
       <view class="metric"><text>{{progress.recordings}}</text><text>跟读</text></view>
       <view class="metric"><text>{{streak}}</text><text>连续</text></view>
     </view>

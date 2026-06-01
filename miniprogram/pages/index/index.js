@@ -38,6 +38,33 @@ const modes = [
   { id: "speak", label: "跟读" }
 ];
 
+function getModeButtons(activeMode) {
+  return modes.map((mode) => ({ ...mode, active: mode.id === activeMode }));
+}
+
+function getStarSlots(stars) {
+  return [0, 1, 2, 3, 4].map((index) => ({ filled: index < Math.min(stars, 5) }));
+}
+
+function getPracticeFlags(practiceMode, activeCard) {
+  return {
+    modes: getModeButtons(practiceMode),
+    isLearnMode: practiceMode === "learn",
+    isListenMode: practiceMode === "listen",
+    isMatchMode: practiceMode === "match",
+    isSpeakMode: practiceMode === "speak",
+    activeHint: practiceMode === "learn" ? activeCard.cn : activeCard.phrase
+  };
+}
+
+function getProgressView(progress) {
+  return {
+    progress,
+    starSlots: getStarSlots(progress.stars),
+    completedCount: progress.completedIds.length
+  };
+}
+
 const globalPraise = ["You tried!", "Great listening!", "Nice voice!", "So brave!", "Little English star!", "One more sparkle!"];
 
 const learningThemes = ["听声音找图片", "看图片说英文", "亲子轮流点读", "颜色和动作小游戏", "睡前复习小挑战", "家里物品寻宝", "夸奖式跟读"];
@@ -94,6 +121,17 @@ function getLocalDateKey(date = new Date()) {
   return `${year}-${month}-${day}`;
 }
 
+function normalizeDate(value) {
+  if (value instanceof Date) return value;
+  if (typeof value === "string") return dateFromKey(value);
+  return new Date(value);
+}
+
+function getMonthKey(date = new Date()) {
+  const current = normalizeDate(date);
+  return `${current.getFullYear()}-${String(current.getMonth() + 1).padStart(2, "0")}-01`;
+}
+
 function dateFromKey(key) {
   const [year, month, day] = key.split("-").map(Number);
   return new Date(year, month - 1, day);
@@ -119,10 +157,12 @@ function getDailyPlan(dateKey) {
 }
 
 function addMonths(date, offset) {
-  return new Date(date.getFullYear(), date.getMonth() + offset, 1);
+  const current = normalizeDate(date);
+  return new Date(current.getFullYear(), current.getMonth() + offset, 1);
 }
 
 function createCalendarDays(baseDate = new Date(), checkIns = {}) {
+  baseDate = normalizeDate(baseDate);
   const year = baseDate.getFullYear();
   const month = baseDate.getMonth();
   const first = new Date(year, month, 1);
@@ -139,6 +179,7 @@ function createCalendarDays(baseDate = new Date(), checkIns = {}) {
 }
 
 function formatMonthTitle(date = new Date()) {
+  date = normalizeDate(date);
   return `${date.getFullYear()} 年 ${date.getMonth() + 1} 月`;
 }
 
@@ -181,20 +222,24 @@ function sampleOptions(active, pool, count = 3) {
 Page({
   data: {
     audienceMode: "kid",
+    kidActive: true,
+    parentActive: false,
     practiceMode: "learn",
+    ...getPracticeFlags("learn", cards[0]),
     activeIndex: 0,
     activeCard: cards[0],
+    activeCategoryName: categoryNames[cards[0].category],
     categoryNames,
-    modes,
     cards,
     options: sampleOptions(cards[0], cards),
     progress: createInitialProgress(),
     checkIns: {},
     praise: "Tap the picture!",
-    starSlots: [0, 1, 2, 3, 4],
+    starSlots: getStarSlots(0),
+    completedCount: 0,
     weekLabels: ["日", "一", "二", "三", "四", "五", "六"],
     todayKey,
-    monthCursor: today,
+    monthCursor: getMonthKey(today),
     monthTitle: formatMonthTitle(today),
     calendarDays: createCalendarDays(today),
     dailyPlan: getDailyPlan(todayKey),
@@ -203,6 +248,8 @@ Page({
     checkedToday: false,
     streak: 0,
     recordingState: "idle",
+    isRecording: false,
+    recordButtonText: "开始跟读",
     recordingPath: "",
     recordHint: "轻轻说一遍，妈妈爸爸只听努力。"
   },
@@ -218,18 +265,25 @@ Page({
       };
       this.setData({
         recordingState: "ready",
+        isRecording: false,
+        recordButtonText: "开始跟读",
         recordingPath: res.tempFilePath,
         recordHint: "Nice voice!",
-        progress: nextProgress
+        ...getProgressView(nextProgress)
       });
       wx.setStorageSync("little-english-progress", nextProgress);
       this.reward(this.data.activeCard, 2);
     });
     this.recorder.onError(() => {
-      this.setData({ recordingState: "idle", recordHint: "录音没有成功，家长可以检查麦克风权限。" });
+      this.setData({
+        recordingState: "idle",
+        isRecording: false,
+        recordButtonText: "开始跟读",
+        recordHint: "录音没有成功，家长可以检查麦克风权限。"
+      });
     });
     this.setData({
-      progress,
+      ...getProgressView(progress),
       checkIns,
       checkedToday: Boolean(checkIns[todayKey]),
       streak: getCheckInStreak(checkIns),
@@ -238,11 +292,20 @@ Page({
   },
 
   switchAudience(event) {
-    this.setData({ audienceMode: event.currentTarget.dataset.mode });
+    const audienceMode = event.currentTarget.dataset.mode;
+    this.setData({
+      audienceMode,
+      kidActive: audienceMode === "kid",
+      parentActive: audienceMode === "parent"
+    });
   },
 
   switchPractice(event) {
-    this.setData({ practiceMode: event.currentTarget.dataset.mode });
+    const practiceMode = event.currentTarget.dataset.mode;
+    this.setData({
+      practiceMode,
+      ...getPracticeFlags(practiceMode, this.data.activeCard)
+    });
   },
 
   playWord() {
@@ -277,7 +340,7 @@ Page({
       completedIds: current.completedIds.includes(card.id) ? current.completedIds : [...current.completedIds, card.id],
       lastWords: [card.word, ...current.lastWords.filter((word) => word !== card.word)].slice(0, 6)
     };
-    this.setData({ praise: nextPraise, progress });
+    this.setData({ praise: nextPraise, ...getProgressView(progress) });
     wx.setStorageSync("little-english-progress", progress);
   },
 
@@ -288,10 +351,14 @@ Page({
     this.setData({
       activeIndex: nextIndex,
       activeCard: cards[nextIndex],
+      activeCategoryName: categoryNames[cards[nextIndex].category],
       practiceMode,
+      ...getPracticeFlags(practiceMode, cards[nextIndex]),
       options: sampleOptions(cards[nextIndex], cards),
       recordingPath: "",
-      recordingState: "idle"
+      recordingState: "idle",
+      isRecording: false,
+      recordButtonText: "开始跟读"
     });
   },
 
@@ -300,14 +367,18 @@ Page({
     this.setData({
       activeIndex: nextIndex,
       activeCard: cards[nextIndex],
+      activeCategoryName: categoryNames[cards[nextIndex].category],
+      ...getPracticeFlags(this.data.practiceMode, cards[nextIndex]),
       options: sampleOptions(cards[nextIndex], cards),
       recordingPath: "",
-      recordingState: "idle"
+      recordingState: "idle",
+      isRecording: false,
+      recordButtonText: "开始跟读"
     });
   },
 
   goHome() {
-    this.setData({ practiceMode: "learn" });
+    this.setData({ practiceMode: "learn", ...getPracticeFlags("learn", this.data.activeCard) });
   },
 
   toggleRecord() {
@@ -315,7 +386,12 @@ Page({
       this.recorder.stop();
       return;
     }
-    this.setData({ recordingState: "recording", recordHint: "正在听你说..." });
+    this.setData({
+      recordingState: "recording",
+      isRecording: true,
+      recordButtonText: "停止",
+      recordHint: "正在听你说..."
+    });
     this.recorder.start({ duration: 6000, format: "mp3", numberOfChannels: 1, sampleRate: 16000 });
   },
 
@@ -341,7 +417,7 @@ Page({
   prevMonth() {
     const monthCursor = addMonths(this.data.monthCursor, -1);
     this.setData({
-      monthCursor,
+      monthCursor: getMonthKey(monthCursor),
       monthTitle: formatMonthTitle(monthCursor),
       calendarDays: createCalendarDays(monthCursor, this.data.checkIns)
     });
@@ -350,7 +426,7 @@ Page({
   nextMonth() {
     const monthCursor = addMonths(this.data.monthCursor, 1);
     this.setData({
-      monthCursor,
+      monthCursor: getMonthKey(monthCursor),
       monthTitle: formatMonthTitle(monthCursor),
       calendarDays: createCalendarDays(monthCursor, this.data.checkIns)
     });

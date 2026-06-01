@@ -1,15 +1,14 @@
 .app-shell {
   width: 100%;
   min-height: 100vh;
-  padding: max(24rpx, env(safe-area-inset-top)) 24rpx max(24rpx, env(safe-area-inset-bottom));
+  padding: 24rpx;
   box-sizing: border-box;
 }
 
 .topbar {
-  display: grid;
-  grid-template-columns: 168rpx 1fr 168rpx;
+  display: flex;
   align-items: center;
-  gap: 14rpx;
+  justify-content: space-between;
   margin-bottom: 20rpx;
 }
 
@@ -18,13 +17,18 @@
   align-items: center;
   justify-content: center;
   gap: 8rpx;
+  flex: 1;
   min-width: 0;
-  font-size: 30rpx;
+  padding: 0 12rpx;
+  font-size: 28rpx;
   font-weight: 900;
   color: #284048;
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 .mode-pill {
+  width: 150rpx;
   min-height: 78rpx;
   border-radius: 999rpx;
   background: rgba(255, 255, 255, 0.76);
@@ -44,9 +48,9 @@
 
 .kid-view {
   display: flex;
-  min-height: calc(100vh - 130rpx);
+  min-height: 1120rpx;
   flex-direction: column;
-  gap: 18rpx;
+  gap: 14rpx;
 }
 
 .star-row {
@@ -72,8 +76,7 @@
 }
 
 .mode-tabs {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 8rpx;
   padding: 8rpx;
   border-radius: 999rpx;
@@ -81,6 +84,7 @@
 }
 
 .mode-tabs button {
+  flex: 1;
   min-height: 70rpx;
   border-radius: 999rpx;
   font-size: 28rpx;
@@ -96,7 +100,7 @@
 .word-stage {
   position: relative;
   display: flex;
-  min-height: 520rpx;
+  min-height: 470rpx;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -134,13 +138,13 @@
 }
 
 .visual {
-  font-size: 176rpx;
+  font-size: 156rpx;
   line-height: 1;
 }
 
 .word {
   color: #fffdf6;
-  font-size: 92rpx;
+  font-size: 82rpx;
   font-weight: 950;
   line-height: 1;
   text-shadow: 0 8rpx 24rpx rgba(44, 55, 58, 0.22);
@@ -165,14 +169,15 @@
 
 .action-grid,
 .choice-grid {
-  display: grid;
-  gap: 18rpx;
+  display: flex;
+  gap: 16rpx;
 }
 
 .primary-action,
 .record-button,
 .playback-button {
-  min-height: 122rpx;
+  width: 100%;
+  min-height: 108rpx;
   border-radius: 32rpx;
   background: #243035;
   color: #fffdf6;
@@ -181,22 +186,16 @@
   box-shadow: 0 18rpx 34rpx rgba(36, 48, 53, 0.16);
 }
 
-.visual-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
-
 .choice-card {
+  flex: 1;
   min-height: 160rpx;
   border-radius: 32rpx;
   font-size: 76rpx;
   box-shadow: 0 14rpx 28rpx rgba(63, 72, 75, 0.12);
 }
 
-.word-grid {
-  grid-template-columns: repeat(3, 1fr);
-}
-
 .word-choice {
+  flex: 1;
   min-height: 104rpx;
   border-radius: 28rpx;
   background: #fff;
@@ -207,7 +206,8 @@
 }
 
 .record-panel {
-  display: grid;
+  display: flex;
+  flex-direction: column;
   gap: 16rpx;
 }
 
@@ -242,13 +242,13 @@
 }
 
 .bottom-controls {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+  display: flex;
   gap: 16rpx;
   margin-top: auto;
 }
 
 .bottom-controls button {
+  flex: 1;
   min-height: 108rpx;
   border-radius: 30rpx;
   background: rgba(255, 255, 255, 0.88);
@@ -262,7 +262,7 @@
 }
 
 .parent-view {
-  height: calc(100vh - 124rpx);
+  height: 1120rpx;
 }
 
 .parent-hero,
@@ -314,14 +314,14 @@
 }
 
 .metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  display: flex;
   gap: 12rpx;
   margin-bottom: 22rpx;
 }
 
 .metric {
   display: flex;
+  flex: 1;
   min-height: 112rpx;
   flex-direction: column;
   align-items: center;
@@ -337,9 +337,9 @@
 }
 
 .panel-head {
-  display: grid;
-  grid-template-columns: 72rpx 1fr 72rpx;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 16rpx;
   font-size: 32rpx;
   font-weight: 950;
@@ -347,6 +347,7 @@
 }
 
 .panel-head button {
+  width: 72rpx;
   min-height: 64rpx;
   border-radius: 20rpx;
   background: #f4f6f4;
@@ -355,8 +356,8 @@
 
 .week-row,
 .calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 8rpx;
 }
 
@@ -368,8 +369,13 @@
   text-align: center;
 }
 
+.week-row text {
+  width: 86rpx;
+}
+
 .day-cell {
   display: flex;
+  width: 86rpx;
   min-height: 70rpx;
   align-items: center;
   justify-content: center;
@@ -395,11 +401,15 @@
 }
 
 .plan-row {
-  display: grid;
-  grid-template-columns: 230rpx 1fr;
+  display: flex;
   gap: 16rpx;
   padding: 16rpx 0;
   border-bottom: 2rpx solid rgba(36, 48, 53, 0.07);
+}
+
+.plan-row > view:first-child {
+  width: 230rpx;
+  flex-shrink: 0;
 }
 
 .plan-date,
@@ -428,13 +438,14 @@
 }
 
 .library-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  display: flex;
+  flex-wrap: wrap;
   gap: 14rpx;
 }
 
 .library-card {
   display: flex;
+  width: 318rpx;
   min-height: 188rpx;
   flex-direction: column;
   align-items: center;

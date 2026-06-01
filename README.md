@@ -43,6 +43,17 @@ The Mini Program version keeps the same core flows: kid mode, parent mode, word 
 
 Note: browser speech synthesis is not available inside native Mini Programs. The current Mini Program build keeps a safe pronunciation button with haptic/toast feedback; production-grade English pronunciation should be connected next with local MP3 assets or an approved WeChat Mini Program speech/audio plugin.
 
+To upload a trial/review build after testing:
+
+1. Open WeChat DevTools.
+2. Make sure the administrator WeChat account is logged in.
+3. Open `Settings` -> `Security` and enable the service port if command-line upload is needed.
+4. Import `C:\Users\ehafo\Documents\生活小助手\miniprogram`.
+5. Click `Compile` and test kid mode, parent mode, recording, check-in, and month switching.
+6. Click `Upload`, or run:
+   `C:\Program Files (x86)\Tencent\微信web开发者工具\cli.bat upload --project C:\Users\ehafo\Documents\生活小助手\miniprogram --version 0.2.0 --desc "Fix responsive layout and core flows"`
+7. In the Mini Program admin console, submit the uploaded version for review: https://mp.weixin.qq.com/
+
 ## Commands
 
 - `npm.cmd install`
