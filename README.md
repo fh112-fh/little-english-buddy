@@ -24,6 +24,25 @@ The app is a static front-end app. It does not need a custom server after build.
 
 The Vite build uses relative asset paths so the app can also work under a project subpath, such as a GitHub Pages URL.
 
+## WeChat Mini Program
+
+The `miniprogram` folder is a native WeChat Mini Program version using AppID `wx01ebbc05d75c95e5`.
+
+Open it with WeChat DevTools:
+
+1. Download WeChat DevTools: https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html
+2. Open WeChat DevTools and sign in with the administrator WeChat account.
+3. Click `Import Project`.
+4. Project directory: choose `C:\Users\ehafo\Documents\生活小助手\miniprogram`.
+5. AppID: `wx01ebbc05d75c95e5`.
+6. Project name: `little-english-buddy`.
+7. Click `Import`.
+8. Click `Compile`, then use `Preview` to scan with WeChat on a phone.
+
+The Mini Program version keeps the same core flows: kid mode, parent mode, word cards, matching, recording practice, local progress, daily check-in, month calendar, and daily learning library.
+
+Note: browser speech synthesis is not available inside native Mini Programs. The current Mini Program build keeps a safe pronunciation button with haptic/toast feedback; production-grade English pronunciation should be connected next with local MP3 assets or an approved WeChat Mini Program speech/audio plugin.
+
 ## Commands
 
 - `npm.cmd install`

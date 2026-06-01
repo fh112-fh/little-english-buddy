@@ -1,0 +1,129 @@
+<view class="app-shell">
+  <view class="topbar">
+    <button class="mode-pill {{audienceMode === 'kid' ? 'active' : ''}}" data-mode="kid" bindtap="switchAudience">
+      <text class="mode-icon">☻</text>
+      <text>孩子</text>
+    </button>
+    <view class="brand">
+      <text>✦</text>
+      <text>Little English</text>
+    </view>
+    <button class="mode-pill {{audienceMode === 'parent' ? 'active' : ''}}" data-mode="parent" bindtap="switchAudience">
+      <text class="mode-icon">♙</text>
+      <text>家长</text>
+    </button>
+  </view>
+
+  <view wx:if="{{audienceMode === 'kid'}}" class="kid-view">
+    <view class="star-row" aria-label="今日星星">
+      <text wx:for="{{starSlots}}" wx:key="index" class="star {{index < progress.stars && index < 5 ? 'filled' : ''}}">☆</text>
+      <text class="star-count">{{progress.stars}}</text>
+    </view>
+
+    <view class="mode-tabs">
+      <button wx:for="{{modes}}" wx:key="id" class="{{practiceMode === item.id ? 'active' : ''}}" data-mode="{{item.id}}" bindtap="switchPractice">
+        {{item.label}}
+      </button>
+    </view>
+
+    <button class="word-stage {{activeCard.bg}}" bindtap="playWord">
+      <text class="category">{{categoryNames[activeCard.category]}}</text>
+      <text class="visual">{{activeCard.visual}}</text>
+      <text class="word">{{activeCard.word}}</text>
+      <text class="hint">{{practiceMode === 'learn' ? activeCard.cn : activeCard.phrase}}</text>
+      <text class="tap-cue">🔊 tap</text>
+    </button>
+
+    <view wx:if="{{practiceMode === 'learn'}}" class="action-grid single">
+      <button class="primary-action" bindtap="playWord">🔊 听一听</button>
+    </view>
+
+    <view wx:if="{{practiceMode === 'listen'}}" class="choice-grid visual-grid">
+      <button wx:for="{{options}}" wx:key="id" class="choice-card {{item.bg}}" data-id="{{item.id}}" bindtap="chooseOption">
+        <text>{{item.visual}}</text>
+      </button>
+    </view>
+
+    <view wx:if="{{practiceMode === 'match'}}" class="choice-grid word-grid">
+      <button wx:for="{{options}}" wx:key="id" class="word-choice" data-id="{{item.id}}" bindtap="chooseOption">{{item.word}}</button>
+    </view>
+
+    <view wx:if="{{practiceMode === 'speak'}}" class="record-panel">
+      <button class="record-button {{recordingState === 'recording' ? 'recording' : ''}}" bindtap="toggleRecord">
+        {{recordingState === 'recording' ? '停止' : '开始跟读'}}
+      </button>
+      <button wx:if="{{recordingPath}}" class="playback-button" bindtap="playRecording">▶ 听听自己</button>
+      <text class="record-note">{{recordHint}}</text>
+    </view>
+
+    <view class="praise-bubble">
+      <text>♡</text>
+      <text>{{praise}}</text>
+    </view>
+
+    <view class="bottom-controls">
+      <button bindtap="goPrev">‹</button>
+      <button class="home-button" bindtap="goHome">⌂</button>
+      <button bindtap="goNext">›</button>
+    </view>
+  </view>
+
+  <scroll-view wx:else class="parent-view" scroll-y="true">
+    <view class="parent-hero">
+      <text class="eyebrow">今日 5 分钟</text>
+      <text class="hero-title">{{dailyPlan.theme}}</text>
+      <text class="hero-copy">{{dailyPlan.parentTip}}</text>
+      <button class="check-button {{checkedToday ? 'done' : ''}}" bindtap="checkInToday">
+        {{checkedToday ? '今日已打卡' : '完成今日打卡'}}
+      </button>
+    </view>
+
+    <view class="metric-grid">
+      <view class="metric"><text>{{progress.stars}}</text><text>星星</text></view>
+      <view class="metric"><text>{{progress.completedIds.length}}</text><text>词卡</text></view>
+      <view class="metric"><text>{{progress.recordings}}</text><text>跟读</text></view>
+      <view class="metric"><text>{{streak}}</text><text>连续</text></view>
+    </view>
+
+    <view class="panel">
+      <view class="panel-head">
+        <button bindtap="prevMonth">‹</button>
+        <text>{{monthTitle}}</text>
+        <button bindtap="nextMonth">›</button>
+      </view>
+      <view class="week-row">
+        <text wx:for="{{weekLabels}}" wx:key="*this">{{item}}</text>
+      </view>
+      <view class="calendar-grid">
+        <view wx:for="{{calendarDays}}" wx:key="key" class="day-cell {{item && item.isToday ? 'today' : ''}} {{item && item.checked ? 'checked' : ''}}">
+          <text wx:if="{{item}}">{{item.day}}</text>
+          <text wx:if="{{item && item.checked}}">✓</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="section-title">后面每天学什么</view>
+      <view wx:for="{{upcomingPlans}}" wx:key="dateKey" class="plan-row">
+        <view>
+          <text class="plan-date">{{item.dateKey}}</text>
+          <text class="plan-theme">{{item.theme}}</text>
+        </view>
+        <view class="plan-words">
+          <text wx:for="{{item.words}}" wx:key="word">{{item.word}}</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="panel">
+      <view class="section-title">基础日常词库</view>
+      <view class="library-grid">
+        <button wx:for="{{dailyLifeWords}}" wx:key="word" class="library-card {{item.bg}}" data-word="{{item.word}}" bindtap="playLibraryWord">
+          <text class="library-visual">{{item.visual}}</text>
+          <text class="library-word">{{item.word}}</text>
+          <text class="library-cn">{{item.cn}}</text>
+        </button>
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -1,0 +1,14 @@
+{
+  "appid": "wx01ebbc05d75c95e5",
+  "compileType": "miniprogram",
+  "libVersion": "latest",
+  "projectname": "little-english-buddy",
+  "setting": {
+    "urlCheck": true,
+    "es6": true,
+    "enhance": true,
+    "postcss": true,
+    "minified": true
+  },
+  "miniprogramRoot": "./"
+}
